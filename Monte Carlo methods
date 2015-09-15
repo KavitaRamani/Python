@@ -1,0 +1,78 @@
+import scipy.stats as sp
+import numpy as np
+import pylab as p
+
+#Creating normal random numbers from uniform numbers
+#Box_ Muller
+
+def Box_Muller(n):
+    u=np.random.rand((n+1)/2,2)
+    x=np.exp(-2*np.log(u[:,0]))*np.cos(2*np.pi*u[:,1])
+    y=np.exp(-2*np.log(u[:,0]))*np.sin(2*np.pi*u[:,1])
+    m=p.concatenate((x,y))
+    return (m)
+
+#Marsaglia
+
+def Marsaglia(n):
+    u=np.random.rand((n+1)/2,2)
+    w=u[:,0]
+    z=u[:,1]
+    s=w**2+z**2
+    x=w*np.sqrt((-2*np.log(s))/s)
+    y=z*np.sqrt((-2*np.log(s))/s)
+    m=p.concatenate((x,y))
+    return (m)
+
+#Naiive Monte Carlo simulation
+
+S0=50.0;K=50.0;r=0.05;D=0.0;sigma=0.3;T=6.0/12.0;n=n_partitions=500;dt=T/n
+e=np.random.randn(10000,n)
+dB=np.sqrt(dt)*e;
+S=p.zeros([10000,n+1]);S[:,0]=S0;
+for i in range(n):
+    dS=S[:,i]*(r*dt+sigma*dB[:,i])
+    S[:,i+1]=S[:,i]+dS
+
+def option():
+    stock_at_maturity=S[:,-1]
+    payoff=stock_at_maturity-K
+    payoff=payoff*(payoff>0)
+    call_option=np.exp(-r*T)*payoff.mean()
+    return (call_option,payoff.mean())
+
+#Plotting the 5 paths
+
+time=p.arange(0,T+dt,dt)
+for i in range(5):
+  p.plot(time,S[i,:])
+  
+#Monte Carlo simulation for ln S
+S0=50.0;K=50.0;r=0.05;D=0.0;sigma=0.3;T=6.0/12.0;n=n_partitions=500
+def MC(M):
+    e=np.random.randn(M)
+    S=S0*np.exp((r-D-0.5*sigma**2)*T+sigma*np.sqrt(T)*e)  #There is no plotting of time. Time is right from 0 to 6 months. Only a single column 
+    payoff=S-K
+    payoff=payoff*(payoff>0)
+    call_option=np.exp(-r*T)*payoff.mean()
+    return (call_option,payoff.std())
+    
+for i in range(n_runs):
+    f,sig=MC(M)  #Labels f=call_option, sig=payoff.std()
+    sig_n=sig/np.sqrt(n)  #Finds standard deviation of one run
+    
+print(f,sig,sig_n)
+
+#Monte Carlo for Asian Option
+
+S0=40.0;K=40.0;r=0.08;D=0.0;sigma=0.3;T=3.0/12.0;n=n_partitions=10000;h=1.0/12.0
+
+e1=np.random.randn(n,1)
+e2=np.random.rand(n,1)
+e3=np.random.rand(n,1)
+S1=S0*np.exp((r-D-0.5*sigma**2)*h+sigma*np.sqrt(h)*e1)
+S2=S1*np.exp((r-D-0.5*sigma**2)*h+sigma*np.sqrt(h)*e2)
+S3=S2*np.exp((r-D-0.5*sigma**2)*h+sigma*np.sqrt(h)*e3)
+geo_ave=(S1*S2*S3)**(1.0/3.0)
+payoffs=payoff*(payoff>0)
+call_option=np.exp(-r*T)*payoffs.mean()
