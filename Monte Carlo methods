@@ -7,8 +7,8 @@ import pylab as p
 
 def Box_Muller(n):
     u=np.random.rand((n+1)/2,2)
-    x=np.exp(-2*np.log(u[:,0]))*np.cos(2*np.pi*u[:,1])
-    y=np.exp(-2*np.log(u[:,0]))*np.sin(2*np.pi*u[:,1])
+    x=np.sqrt(-2*np.log(u[:,0]))*np.cos(2*np.pi*u[:,1])
+    y=np.sqrt(-2*np.log(u[:,0]))*np.sin(2*np.pi*u[:,1])
     m=p.concatenate((x,y))
     return (m)
 
