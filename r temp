@@ -60,5 +60,48 @@ complete("specdata", c(2, 4, 8, 10, 12))
 complete("specdata", 30:25)
 complete("specdata", 3)
 
-#Part 3
 
+best<-function(state,outcome) {
+  
+##Read outcome data
+  
+  hosp.data<-read.csv("outcome-of-care-measures.csv",)
+
+##Converting 'character' class into 'numeric' class
+  
+  hosp.data[,11]<-as.numeric(hosp.data[,11])
+  hosp.data[,17]<-as.numeric(hosp.data[,17])
+  hosp.data[,23]<-as.numeric(hosp.data[,23])
+  
+##Check that state and outcome are valid
+  
+  if (!state %in% hosp.data$State){
+    stop ("invalid state")} 
+  if (!outcome %in% c("heart attack","heart failure","pneumonia")){
+    stop ("invalid outcome")} 
+  
+##Return hospital name in that state with lowest 30-day death rate
+  
+  if (outcome=="heart attack"){
+    state_sub<-hosp.data[hosp.data[,7]=="state",]
+    outcome_new<-state_sub[,hosp.data[,11]]
+    lowestmortalityHeartAttack<-min(outcome_new,na.rm = TRUE)
+    min_index<-which(outcome_new==lowestmortalityHeartAttack)
+    hospital_name<-state_sub[min_index,2]
+  }
+  if (outcome=="heart failure"){
+    state_sub<-hosp.data[hosp.data[,7]=="state",]
+    outcome_new<-state_sub[,hosp.data[,17]]
+    lowestmortalityHeartFailure<-min(outcome_new,na.rm = TRUE)
+    min_index<-which(outcome_new==lowestmortalityHeartFailure)
+    hospital_name<-state_sub[min_index,2]
+  }
+  if (outcome=="pneumonia"){
+    state_sub<-hosp.data[hosp.data[,7]=="state",]
+    outcome_new<-state_sub[,hosp.data[,23]]
+    lowestmortalityHeartPneumonia<-min(outcome_new,na.rm = TRUE)
+    min_index<-which(outcome_new==lowestmortalityPneumonia)
+    hospital_name<-state_sub[min_index,2]
+  }
+ hospital_name
+}
