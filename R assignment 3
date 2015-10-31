@@ -1,0 +1,83 @@
+Part 1
+best<-function(state,outcome) {
+  
+  ##Read outcome data
+  
+  hosp.data<-read.csv("outcome-of-care-measures.csv",stringsAsFactors = FALSE,na.strings = "Not Available")
+  
+  ##Check that state and outcome are valid
+  
+  if (!state %in% hosp.data$State){
+    stop ("invalid state")} 
+  if (!outcome %in% c("heart attack","heart failure","pneumonia")){
+    stop ("invalid outcome")} 
+  
+  ##Return hospital name in that state with lowest 30-day death rate
+  
+  if (outcome=="heart attack"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack,state_sub$Hospital.Name,na.last = NA),]
+    hospital_name<-ordered_data[1,2]
+  }
+  
+  if (outcome=="heart failure"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure,state_sub$Hospital.Name,na.last = NA),]
+    hospital_name<-ordered_data[1,2]
+  }
+  if (outcome=="pneumonia"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia,state_sub$Hospital.Name,na.last = NA),]
+    hospital_name<-ordered_data[1,2]
+  }
+  hospital_name
+}
+
+Part 2
+
+rankall<- function(outcome,num="best"){
+
+##Read outcome data
+  
+  hosp.data<-read.csv("outcome-of-care-measures.csv",stringsAsFactors = FALSE,na.strings = "Not Available")
+  
+  ##Check that state and outcome are valid
+  
+  if (!state %in% hosp.data$State){
+    stop ("invalid state")} 
+  if (!outcome %in% c("heart attack","heart failure","pneumonia")){
+    stop ("invalid outcome")} 
+  
+##Return hospital name in that state with lowest 30-day death rate
+  
+  if (outcome=="heart attack"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack,state_sub$Hospital.Name,na.last = NA),]
+    ranked_data<- rank(ordered_data$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack,ties.method = "first")
+    if (num=="worst"){
+      num<-length(ranked_data)
+    }
+  }
+  
+  if (outcome=="heart failure"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure,state_sub$Hospital.Name,na.last = NA),]
+    ranked_data<- rank(ordered_data$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure,ties.method = "first")
+    if (num=="worst"){
+      num<-length(ranked_data)
+    }
+  }
+  
+  if (outcome=="pneumonia"){
+    state_sub<-hosp.data[hosp.data[,7]==state,]
+    ordered_data<-state_sub[order(state_sub$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia,state_sub$Hospital.Name,na.last = NA),]
+    ranked_data<- rank(ordered_data$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia,ties.method = "first")
+    if (num=="worst"){
+      num<-length(ranked_data)
+    }
+  }
+  hospital_name<- ordered_data[num,2]
+  hospital_name
+}
+
+Part 3 (pending!!)
